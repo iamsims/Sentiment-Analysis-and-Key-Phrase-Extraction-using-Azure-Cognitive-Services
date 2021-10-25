@@ -141,8 +141,7 @@ if st.button('Perform'):
             ax1.axis('equal')  
             st.pyplot(fig1)
             
-        
-
+    
 
             if result['sentiment']=="negative":
               emoji =":pensive:"
@@ -156,23 +155,17 @@ if st.button('Perform'):
         if operation == 'Key Phrase Extraction' or operation == "Whole analysis":
 
             document = key_extraction(data)
-            print(document)
             result = [x for x in document['keyPhrases']]
+            st.header("Key Phrases Extraction")
+            if (result ==[]):
+                st.info("There are no key phrases in this document")
+
+            else:
+                st.write("The key phrases in this document are: ")
+                for i in range(len(result)):
+                    st.write(str(i+1)+". "+ result[i])
+
+
 
             
             
-
-
-
-# # Pie chart, where the slices will be ordered and plotted counter-clockwise:
-# labels = 'Negative', 'Neutral', 'Positive'
-# sizes = [15, 30, 45]
-# explode = (0, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
-
-# fig1, ax1 = plt.subplots()
-# ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
-#         shadow=True, startangle=90)
-# ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-# st.pyplot(fig1)
-      
