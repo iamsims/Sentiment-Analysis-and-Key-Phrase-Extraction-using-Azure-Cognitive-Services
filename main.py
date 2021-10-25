@@ -5,6 +5,8 @@ import urllib.parse, http.client, urllib.request, urllib.error, json
 import requests
 import json
 from string import punctuation
+import matplotlib.pyplot as plt
+
 
 textAnalyticsEndpoint = 'textprocessinginstance.cognitiveservices.azure.com'
 textAnalyticsKey = st.secrets["textAnalyticsKey"]
@@ -60,9 +62,8 @@ def key_extraction(data):
         data = json.loads(jsonData)
 
         document = data['documents'][0]
-        result = [x for x in document['keyPhrases']]
         conn.close()
-        return result
+        return document
 
     except Exception as ex:
         print(ex)
@@ -92,7 +93,6 @@ def sentiment_analyze(data):
         response = conn.getresponse()
         jsonData = response.read().decode('UTF-8') 
         data = json.loads(jsonData)
-
         document = data['documents'][0]
         # result = document['sentiment']
         conn.close()
@@ -100,8 +100,6 @@ def sentiment_analyze(data):
 
     except Exception as ex:
         print(ex)
-
-
 
 
 
@@ -113,6 +111,8 @@ def clean (data):
 
     except Exception as ex:
         print(ex)
+
+
 
 
 st.title('Sentiment Analysis & Key Phrases Extraction')
@@ -128,9 +128,20 @@ if st.button('Perform'):
 
         if operation == 'Sentiment Analysis' or operation == "Whole analysis":
             result = sentiment_analyze(data)
-            print(result)
+            st.header("Sentiment Analysis")
+            labels = 'Negative', 'Neutral', 'Positive'
+            sizes = [result['confidenceScores']['negative'], result['confidenceScores']['neutral'], result['confidenceScores']['positive']]
 
+            fig1, ax1 = plt.subplots()
+            colors = ['red', 'blue', 'green', 'yellow']
+            patches, text= ax1.pie(sizes, colors= colors, startangle=90)
+            ax1.legend(patches, labels, loc="best")
 
+            
+            ax1.axis('equal')  
+            st.pyplot(fig1)
+            
+        
 
 
             if result['sentiment']=="negative":
@@ -139,13 +150,29 @@ if st.button('Perform'):
               emoji =":neutral_face:"
             if result['sentiment']=="positive":
               emoji =":grin:"
-            st.write(emoji + "  "+ result['sentiment'] + " statement! ")
+            st.info(emoji + "  "+ result['sentiment'] + " statement! ")
 
 
         if operation == 'Key Phrase Extraction' or operation == "Whole analysis":
-            result = key_extraction(data)
+
+            document = key_extraction(data)
+            print(document)
+            result = [x for x in document['keyPhrases']]
+
+            
             
 
 
-            
+
+# # Pie chart, where the slices will be ordered and plotted counter-clockwise:
+# labels = 'Negative', 'Neutral', 'Positive'
+# sizes = [15, 30, 45]
+# explode = (0, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
+
+# fig1, ax1 = plt.subplots()
+# ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
+#         shadow=True, startangle=90)
+# ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+# st.pyplot(fig1)
       
